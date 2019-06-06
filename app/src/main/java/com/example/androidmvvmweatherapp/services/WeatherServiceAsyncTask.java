@@ -3,10 +3,9 @@ package com.example.androidmvvmweatherapp.services;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.androidmvvmweatherapp.model.Weather;
+import com.example.androidmvvmweatherapp.presenters.MainActivityPresenter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,16 +25,12 @@ public class WeatherServiceAsyncTask extends AsyncTask<String, Void, Weather> {
 
     private static final String OPEN_API_WEATHER_KEY = "60157a0b8341f921509717e43ed101fc";
 
-    private TextView mTemperatureTextView;
-    private TextView mDescriptionTextView;
-    private ImageView mImageView;
+    private MainActivityPresenter.View mPresenterView;
     private ImageDownloadService mImageDownloadService;
 
-    public WeatherServiceAsyncTask(TextView mTemperatureTextView, TextView mDescriptionTextView, ImageView mImageView) {
-        this.mTemperatureTextView = mTemperatureTextView;
-        this.mDescriptionTextView = mDescriptionTextView;
-        this.mImageView = mImageView;
+    public WeatherServiceAsyncTask(MainActivityPresenter.View presenter) {
         mImageDownloadService = new ImageDownloadService();
+        this.mPresenterView = presenter;
     }
 
     @Override
@@ -87,9 +82,11 @@ public class WeatherServiceAsyncTask extends AsyncTask<String, Void, Weather> {
         super.onPostExecute(weather);
 
         if (weather != null) {
-            mTemperatureTextView.setText(weather.getTemperature() + " °C");
-            mDescriptionTextView.setText(weather.getDescription());
-            mImageView.setImageBitmap(weather.getBitmapImage());
+            mPresenterView.updateTemperature(weather.getTemperature());
+            mPresenterView.updateDescription(weather.getDescription());
+            mPresenterView.updateImage(weather.getBitmapImage());
+        } else {
+            mPresenterView.displayServiceErrorMessage();
         }
     }
 }
