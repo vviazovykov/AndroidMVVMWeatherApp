@@ -13,7 +13,8 @@ import java.lang.reflect.Type;
 public class WeatherDeserializer implements JsonDeserializer {
 
     @Override
-    public Object deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public Object deserialize(JsonElement json, Type typeOfT,
+                              JsonDeserializationContext context) throws JsonParseException {
 
         JsonObject jsonObject = json.getAsJsonObject();
         JsonArray weatherJsonArray = jsonObject.get("weather").getAsJsonArray();

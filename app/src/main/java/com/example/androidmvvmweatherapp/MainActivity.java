@@ -9,16 +9,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.androidmvvmweatherapp.model.Weather;
 import com.example.androidmvvmweatherapp.presenters.MainActivityPresenter;
-import com.example.androidmvvmweatherapp.services.WeatherServiceAsyncTask;
+import com.example.androidmvvmweatherapp.services.WeatherService;
 
 import java.util.Locale;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements MainActivityPresenter.View {
+public class MainActivity extends AppCompatActivity
+        implements MainActivityPresenter.View, Callback<Weather> {
 
     @BindView(R.id.cityEditText)
     EditText mCityEditText;
@@ -28,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     TextView mDescriptionTextView;
     @BindView(R.id.weatherImageView)
     ImageView mImageView;
+    @BindString(R.string.app_key)
+    String mApiKey;
 
     private MainActivityPresenter mPresenter;
 
@@ -59,8 +67,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
 
     @Override
     public void performSearch(String value) {
-        WeatherServiceAsyncTask weatherServiceAsyncTask = new WeatherServiceAsyncTask(this);
-        weatherServiceAsyncTask.execute(value);
+        WeatherService weatherService = new WeatherService();
+        Call<Weather> call = weatherService.getWeatherData(value, mApiKey);
+        call.enqueue(this);
     }
 
     @Override
@@ -81,5 +90,24 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     @Override
     public void displayServiceErrorMessage() {
         Toast.makeText(this, R.string.service_error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onResponse(Call<Weather> call, Response<Weather> response) {
+        if (response.isSuccessful()) {
+            Weather weather = response.body();
+            if (weather != null) {
+                updateTemperature(weather.getTemperature());
+                updateDescription(weather.getDescription());
+                updateImage(weather.getImageUrl());
+            }
+        } else {
+            displayServiceErrorMessage();
+        }
+    }
+
+    @Override
+    public void onFailure(Call<Weather> call, Throwable t) {
+        displayServiceErrorMessage();
     }
 }
