@@ -1,15 +1,13 @@
 package com.example.androidmvvmweatherapp.services;
 
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.androidmvvmweatherapp.converters.WeatherDeserializer;
 import com.example.androidmvvmweatherapp.model.Weather;
 import com.example.androidmvvmweatherapp.presenters.MainActivityPresenter;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,10 +24,8 @@ public class WeatherServiceAsyncTask extends AsyncTask<String, Void, Weather> {
     private static final String OPEN_API_WEATHER_KEY = "60157a0b8341f921509717e43ed101fc";
 
     private MainActivityPresenter.View mPresenterView;
-    private ImageDownloadService mImageDownloadService;
 
     public WeatherServiceAsyncTask(MainActivityPresenter.View presenter) {
-        mImageDownloadService = new ImageDownloadService();
         this.mPresenterView = presenter;
     }
 
@@ -54,23 +50,13 @@ public class WeatherServiceAsyncTask extends AsyncTask<String, Void, Weather> {
                 }
                 String result = stringBuilder.toString();
 
-                Weather weather = new Weather();
-                JSONObject jsonObject = new JSONObject(result);
-                JSONArray weatherJsonArray = jsonObject.getJSONArray("weather");
-                JSONObject weatherElementObject = weatherJsonArray.getJSONObject(0);
+                GsonBuilder builder = new GsonBuilder();
+                builder.registerTypeAdapter(Weather.class, new WeatherDeserializer());
+                Gson gson = builder.create();
 
-                weather.setDescription(weatherElementObject.getString("description"));
-                String icon = weatherElementObject.getString("icon");
-                Bitmap image = mImageDownloadService.downloadImage(icon);
-                weather.setBitmapImage(image);
+                return gson.fromJson(result, Weather.class);
 
-                JSONObject mainJsonObject = jsonObject.getJSONObject("main");
-
-                weather.setTemperature((int)mainJsonObject.getDouble("temp"));
-
-                return weather;
-
-            } catch (IOException | JSONException e) {
+            } catch (IOException e) {
                 Log.e(LOG_TAG, "Exception is occurred", e);
             }
         }
@@ -84,7 +70,7 @@ public class WeatherServiceAsyncTask extends AsyncTask<String, Void, Weather> {
         if (weather != null) {
             mPresenterView.updateTemperature(weather.getTemperature());
             mPresenterView.updateDescription(weather.getDescription());
-            mPresenterView.updateImage(weather.getBitmapImage());
+            mPresenterView.updateImage(weather.getImageUrl());
         } else {
             mPresenterView.displayServiceErrorMessage();
         }

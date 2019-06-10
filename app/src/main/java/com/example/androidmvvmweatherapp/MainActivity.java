@@ -1,6 +1,5 @@
 package com.example.androidmvvmweatherapp;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,17 +8,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.androidmvvmweatherapp.presenters.MainActivityPresenter;
 import com.example.androidmvvmweatherapp.services.WeatherServiceAsyncTask;
 
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class MainActivity extends AppCompatActivity implements MainActivityPresenter.View {
 
-    private EditText mCityEditText;
-    private TextView mTemperatureTextView;
-    private TextView mDescriptionTextView;
-    private ImageView mImageView;
+    @BindView(R.id.cityEditText)
+    EditText mCityEditText;
+    @BindView(R.id.temperatureTextView)
+    TextView mTemperatureTextView;
+    @BindView(R.id.descriptionTextView)
+    TextView mDescriptionTextView;
+    @BindView(R.id.weatherImageView)
+    ImageView mImageView;
 
     private MainActivityPresenter mPresenter;
 
@@ -28,14 +36,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mCityEditText = findViewById(R.id.cityEditText);
-        mTemperatureTextView = findViewById(R.id.temperatureTextView);
-        mDescriptionTextView = findViewById(R.id.descriptionTextView);
-        mImageView = findViewById(R.id.weatherImageView);
+        ButterKnife.bind(this);
 
         mPresenter = new MainActivityPresenter(this);
     }
 
+    @OnClick(R.id.searchButton)
     public void searchClickHandler(View view) {
 
         String city = mCityEditText.getText().toString();
@@ -68,8 +74,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityPrese
     }
 
     @Override
-    public void updateImage(Bitmap image) {
-        mImageView.setImageBitmap(image);
+    public void updateImage(String imageUrl) {
+        Glide.with(this).load(imageUrl).into(mImageView);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.example.androidmvvmweatherapp.presenters;
 
-import android.graphics.Bitmap;
-
 public class MainActivityPresenter {
     private View mView;
 
@@ -22,7 +20,7 @@ public class MainActivityPresenter {
         void performSearch(String value);
         void updateTemperature(int value);
         void updateDescription(String value);
-        void updateImage(Bitmap image);
+        void updateImage(String value);
         void displayServiceErrorMessage();
     }
 }

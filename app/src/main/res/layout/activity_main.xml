@@ -26,7 +26,6 @@
         android:layout_marginStart="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="68dp"
-        android:onClick="searchClickHandler"
         android:text="@string/search_text"
         app:layout_constraintStart_toEndOf="@+id/cityEditText"
         app:layout_constraintTop_toTopOf="parent" />

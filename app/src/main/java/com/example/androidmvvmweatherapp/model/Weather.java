@@ -1,12 +1,10 @@
 package com.example.androidmvvmweatherapp.model;
 
-import android.graphics.Bitmap;
-
 public class Weather {
 
     private int mTemperature;
     private String mDescription;
-    private Bitmap mBitmapImage;
+    private String mImageUrl;
 
     public int getTemperature() {
         return mTemperature;
@@ -24,11 +22,11 @@ public class Weather {
         this.mDescription = mDescription;
     }
 
-    public Bitmap getBitmapImage() {
-        return mBitmapImage;
+    public String getImageUrl() {
+        return mImageUrl;
     }
 
-    public void setBitmapImage(Bitmap mBitmapImage) {
-        this.mBitmapImage = mBitmapImage;
+    public void setImageUrl(String imageUrl) {
+        this.mImageUrl = imageUrl;
     }
 }
